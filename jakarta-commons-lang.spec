@@ -1,30 +1,37 @@
-%define gcj_support	1
+%define gcj_support        1
 %define base_name       lang
 %define short_name      commons-%{base_name}
 %define name            jakarta-%{short_name}
 %define section         free
-%define build_tests     0
+
+%bcond_with             tests
 
 Name:           %{name}
-Version:        2.1
-Release:        %mkrel 4.1
+Version:        2.3
+Release:        %mkrel 0.0.1
 Epoch:          0
 Summary:        Jakarta Commons Lang Package
 License:        Apache License
 Group:          Development/Java
-#Vendor:         JPackage Project
-#Distribution:   JPackage
 URL:            http://jakarta.apache.org/commons/lang.html
-Source0:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.1-src.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
+Source0:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz
+Source1:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.md5
+Source2:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.asc
 %if %{gcj_support}
 Requires(post): java-gcj-compat
 Requires(postun): java-gcj-compat
 BuildRequires:  java-gcj-compat-devel
 %else
 BuildArch:      noarch
+BuildRequires:  java-devel
 %endif
-BuildRequires:  ant, junit, jpackage-utils >= 0:1.5
+BuildRequires:  ant
+BuildRequires:  jpackage-utils
+%if %with tests
+BuildRequires:  ant-junit
+BuildRequires:  junit
+%endif
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The standard Java libraries fail to provide enough methods for
@@ -46,34 +53,33 @@ BuildRequires:  java-javadoc
 %description    javadoc
 Javadoc for %{name}.
 
-
 %prep
-%setup -q -n %{short_name}-%{version}
-
+%setup -q -n %{short_name}-%{version}-src
 
 %build
-%ant \
-  -Djunit.jar=$(find-jar junit) \
+%{ant} \
   -Dfinal.name=%{short_name} \
   -Djdk.javadoc=%{_javadocdir}/java \
-%if %{build_tests}
+%if %with tests
+  -Djunit.jar=$(build-classpath junit) \
   test \
 %endif
-  dist
-
+  jar \
+  javadoc
 
 %install
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
+
 # jars
-mkdir -p $RPM_BUILD_ROOT%{_javadir}
-cp -p dist/%{short_name}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed "s|jakarta-||g"`; done)
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+%{__mkdir_p} %{buildroot}%{_javadir}
+%{__cp} -a dist/%{short_name}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do %{__ln_s} ${jar} `echo $jar| %{__sed} "s|jakarta-||g"`; done)
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do %{__ln_s} ${jar} `echo $jar| %{__sed} "s|-%{version}||g"`; done)
 
 # javadoc
-mkdir -p $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-cp -pr dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
+%{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__cp} -a dist/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__ln_s} %{name}-%{version} %{buildroot}%{_javadocdir}/%{name}
 
 %{__perl} -pi -e 's/\r$//g' *.html *.txt
 
@@ -81,10 +87,8 @@ ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
 %{_bindir}/aot-compile-rpm
 %endif
 
-
-
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
 
 %if %{gcj_support}
 %post
@@ -94,21 +98,16 @@ rm -rf $RPM_BUILD_ROOT
 %{clean_gcjdb}
 %endif
 
-%post javadoc
-rm -f %{_javadocdir}/%{name}
-ln -s %{name}-%{version} %{_javadocdir}/%{name}
-
-
 %files
 %defattr(0644,root,root,0755)
-%doc PROPOSAL.html STATUS.html LICENSE.txt NOTICE.txt RELEASE-NOTES.txt
+%doc LICENSE.txt NOTICE.txt RELEASE-NOTES.txt STATUS.html
 %{_javadir}/*
 %if %{gcj_support}
-%attr(-,root,root) %{_libdir}/gcj/%{name}
+%dir %{_libdir}/gcj/%{name}
+%attr(-,root,root) %{_libdir}/gcj/%{name}/*
 %endif
-
 
 %files javadoc
 %defattr(0644,root,root,0755)
 %doc %{_javadocdir}/%{name}-%{version}
-%ghost %doc %{_javadocdir}/%{name}
+%doc %{_javadocdir}/%{name}

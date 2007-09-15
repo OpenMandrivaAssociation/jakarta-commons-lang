@@ -8,7 +8,7 @@
 
 Name:           %{name}
 Version:        2.3
-Release:        %mkrel 0.0.1
+Release:        %mkrel 0.0.2
 Epoch:          0
 Summary:        Jakarta Commons Lang Package
 License:        Apache License
@@ -18,8 +18,6 @@ Source0:        http://archive.apache.org/dist/jakarta/commons/lang/source/commo
 Source1:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.md5
 Source2:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.asc
 %if %{gcj_support}
-Requires(post): java-gcj-compat
-Requires(postun): java-gcj-compat
 BuildRequires:  java-gcj-compat-devel
 %else
 BuildArch:      noarch

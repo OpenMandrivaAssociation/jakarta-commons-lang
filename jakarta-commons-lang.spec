@@ -8,15 +8,20 @@
 
 Name:           %{name}
 Version:        2.3
-Release:        %mkrel 0.0.2
+Release:        %mkrel 1.0.1
 Epoch:          0
 Summary:        Jakarta Commons Lang Package
 License:        Apache License
 Group:          Development/Java
 URL:            http://jakarta.apache.org/commons/lang.html
 Source0:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz
-Source1:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.md5
-Source2:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.asc
+Source1:        pom-maven2jpp-depcat.xsl
+Source2:        pom-maven2jpp-newdepmap.xsl
+Source3:        pom-maven2jpp-mapdeps.xsl
+Source4:        %{short_name}-%{version}-jpp-depmap.xml
+Source5:        %{short_name}-%{version}.pom
+Source6:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.md5
+Source7:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz.asc
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
 %else
@@ -53,6 +58,22 @@ Javadoc for %{name}.
 
 %prep
 %setup -q -n %{short_name}-%{version}-src
+%{__perl} -pi -e 's/\r//g' *.txt
+
+if [ ! -f %{SOURCE4} ]; then
+export DEPCAT=$(pwd)/%{short_name}-%{version}-depcat.new.xml
+echo '<?xml version="1.0" standalone="yes"?>' > $DEPCAT
+echo '<depset>' >> $DEPCAT
+for p in $(find . -name project.xml); do
+    pushd $(dirname $p)
+    /usr/bin/saxon project.xml %{SOURCE1} >> $DEPCAT
+    popd
+done
+echo >> $DEPCAT
+echo '</depset>' >> $DEPCAT
+/usr/bin/saxon $DEPCAT %{SOURCE2} > %{short_name}-%{version}-depmap.new.xml
+fi
+
 
 %build
 %{ant} \
@@ -74,6 +95,13 @@ Javadoc for %{name}.
 (cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do %{__ln_s} ${jar} `echo $jar| %{__sed} "s|jakarta-||g"`; done)
 (cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do %{__ln_s} ${jar} `echo $jar| %{__sed} "s|-%{version}||g"`; done)
 
+%add_to_maven_depmap %{base_name} %{base_name} %{version} JPP %{name}
+
+# pom
+install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/maven2/poms
+install -m 644 %{SOURCE5} \
+    $RPM_BUILD_ROOT%{_datadir}/maven2/poms/JPP-%{name}.pom
+
 # javadoc
 %{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
 %{__cp} -a dist/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
@@ -88,11 +116,15 @@ Javadoc for %{name}.
 %clean
 %{__rm} -rf %{buildroot}
 
-%if %{gcj_support}
 %post
+%update_maven_depmap
+%if %{gcj_support}
 %{update_gcjdb}
+%endif
 
 %postun
+%update_maven_depmap
+%if %{gcj_support}
 %{clean_gcjdb}
 %endif
 
@@ -100,6 +132,8 @@ Javadoc for %{name}.
 %defattr(0644,root,root,0755)
 %doc LICENSE.txt NOTICE.txt RELEASE-NOTES.txt STATUS.html
 %{_javadir}/*
+%{_datadir}/maven2/poms/*
+%{_mavendepmapfragdir}
 %if %{gcj_support}
 %dir %{_libdir}/gcj/%{name}
 %attr(-,root,root) %{_libdir}/gcj/%{name}/*

@@ -8,7 +8,7 @@
 
 Name:           %{name}
 Version:        2.3
-Release:        %mkrel 1.0.1
+Release:        %mkrel 1.0.2
 Epoch:          0
 Summary:        Jakarta Commons Lang Package
 License:        Apache License
@@ -29,7 +29,7 @@ BuildArch:      noarch
 BuildRequires:  java-devel
 %endif
 BuildRequires:  ant
-BuildRequires:  jpackage-utils
+BuildRequires:  java-rpmbuild
 %if %with tests
 BuildRequires:  ant-junit
 BuildRequires:  junit

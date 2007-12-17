@@ -34,7 +34,6 @@ BuildRequires:  java-rpmbuild
 BuildRequires:  ant-junit
 BuildRequires:  junit
 %endif
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The standard Java libraries fail to provide enough methods for

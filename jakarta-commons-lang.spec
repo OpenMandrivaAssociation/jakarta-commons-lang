@@ -13,6 +13,7 @@ Epoch:          0
 Summary:        Jakarta Commons Lang Package
 License:        Apache License
 Group:          Development/Java
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:            http://jakarta.apache.org/commons/lang.html
 Source0:        http://archive.apache.org/dist/jakarta/commons/lang/source/commons-lang-2.3-src.tar.gz
 Source1:        pom-maven2jpp-depcat.xsl

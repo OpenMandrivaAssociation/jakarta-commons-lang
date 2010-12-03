@@ -35,7 +35,7 @@
 
 Name:           jakarta-%{short_name}
 Version:        2.3
-Release:        %mkrel 2.3.4
+Release:        %mkrel 2.3.5
 Epoch:          0
 Summary:        Provides a host of helper utilities for the java.lang API
 License:        Apache License

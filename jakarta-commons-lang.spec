@@ -136,9 +136,9 @@ fi
 %add_to_maven_depmap %{base_name} %{base_name} %{version} JPP %{name}
 
 # pom
-install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/maven2/poms
+install -d -m 755 %{buildroot}%{_datadir}/maven2/poms
 install -m 644 %{SOURCE5} \
-    $RPM_BUILD_ROOT%{_datadir}/maven2/poms/JPP-%{name}.pom
+    %{buildroot}%{_datadir}/maven2/poms/JPP-%{name}.pom
 
 # javadoc
 %{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
@@ -148,9 +148,9 @@ install -m 644 %{SOURCE5} \
 %{__perl} -pi -e 's/\r$//g' *.html *.txt
 
 ## manual
-install -d -m 755 $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -p STATUS.html $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -p *.txt $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+install -d -m 755 %{buildroot}%{_docdir}/%{name}-%{version}
+cp -p STATUS.html %{buildroot}%{_docdir}/%{name}-%{version}
+cp -p *.txt %{buildroot}%{_docdir}/%{name}-%{version}
 
 %{gcj_compile}
 

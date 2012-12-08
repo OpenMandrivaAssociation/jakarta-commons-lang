@@ -1,7 +1,2 @@
 sources:
-  "commons-lang-2.3-jpp-depmap.xml:"	56456a76a180a8d1bc1667ff814d0fb59532baee
-  "commons-lang-2.3.pom:"	13187624e6fc84efe123c5ab36f8ade0e2bcea2c
-  "commons-lang-2.3-src.tar.gz:"	efc1ab026e8e9ac4cd150cb4cf1b7e4663cddc84
-  "pom-maven2jpp-depcat.xsl:"	5861cae5f65e559ece90a7342d182f5a534b65de
-  "pom-maven2jpp-mapdeps.xsl:"	81e46abb70b7ed6c5afe8311c655edea70aa8aa8
-  "pom-maven2jpp-newdepmap.xsl:"	834413ffc7f650705ce65ca2c89100153142cd92
+  "commons-lang-2.3-src.tar.gz": efc1ab026e8e9ac4cd150cb4cf1b7e4663cddc84

@@ -38,7 +38,7 @@ Version:	2.3
 Release:	3
 License:	Apache License
 Group:		Development/Java
-Url:		http://commons.apache.org/lang/
+Url:		https://commons.apache.org/lang/
 Source0:	http://www.apache.org/dist/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
 Source1:	pom-maven2jpp-depcat.xsl
 Source2:	pom-maven2jpp-newdepmap.xsl
